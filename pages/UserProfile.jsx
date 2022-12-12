@@ -29,6 +29,7 @@ import Router from "next/router";
 import Navbar from "../Components/Navbar";
 function UserProfile() {
   const { data } = useSelector((store) => store.user);
+
   const toast = useToast();
 
   const [formData, setformData] = useState({
@@ -47,6 +48,7 @@ function UserProfile() {
     onOpen();
   };
   const postUser = async (id) => {
+    
     const { email: emu, fullname: huru, password: pasu } = formData;
     if (!emu || !huru || !pasu) {
       alert("please enter all the required fields");
@@ -54,7 +56,7 @@ function UserProfile() {
     const { fullname, email, password } = formData;
     try {
       let resp = await axios.patch(
-        `https://mock-v41w.onrender.com/users/${id}`,
+        `http://localhost:3000/api/signup/${id}`,
         {
           fullname: fullname,
           email: email,
@@ -62,6 +64,8 @@ function UserProfile() {
         }
       );
       const { data } = resp;
+      console.log('data:', data)
+  
       dispatch(userLogin(data));
       onClose();
       toast({

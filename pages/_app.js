@@ -9,7 +9,6 @@ function MyApp({ Component, pageProps }) {
   return (
     <ChakraProvider>
       <Provider store={store}>
-       
         <Component {...pageProps} />
         <Footer />
       </Provider>
