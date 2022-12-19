@@ -1,4 +1,4 @@
-import React from "react";
+
 import axios from "axios";
 async function Session(req, res) {
   const { id } = req.query;

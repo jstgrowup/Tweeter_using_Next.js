@@ -46,6 +46,7 @@ function Signin() {
     try {
       let resp = await axios.get("http://localhost:3000/api/signup");
       const { data } = resp;
+      console.log('data:', data)
 
       let huru = data.find(
         (el) =>

@@ -6,25 +6,12 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import Link from "next/link";
-
 import { BsSun, BsMoonStarsFill } from "react-icons/bs";
 import { useSelector } from "react-redux";
-import Router from "next/router";
-import { useEffect } from "react";
+
 function Navbar() {
-  //   let path = Router.pathname;
-  //   console.log('path:', path)
   const { data } = useSelector((store) => store.user);
   const { colorMode, toggleColorMode } = useColorMode();
-
-  useEffect(() => {
-    if (Router.pathname === "/" && !data.username) {
-      Router.push("/");
-    }
-    else if (!data.username) {
-      Router.push("/Signin");
-    }
-  }, []);
 
   return (
     <div>

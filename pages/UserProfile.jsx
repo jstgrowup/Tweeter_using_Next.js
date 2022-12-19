@@ -11,7 +11,7 @@ import {
   Input,
   useToast,
 } from "@chakra-ui/react";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   Modal,
@@ -29,7 +29,14 @@ import Router from "next/router";
 import Navbar from "../Components/Navbar";
 function UserProfile() {
   const { data } = useSelector((store) => store.user);
-
+  
+  useEffect(() => {
+    
+  
+   
+  }, [data])
+  
+  
   const toast = useToast();
 
   const [formData, setformData] = useState({
@@ -48,25 +55,18 @@ function UserProfile() {
     onOpen();
   };
   const postUser = async (id) => {
-    
     const { email: emu, fullname: huru, password: pasu } = formData;
     if (!emu || !huru || !pasu) {
       alert("please enter all the required fields");
     }
-    const { fullname, email, password } = formData;
+
     try {
       let resp = await axios.patch(
         `http://localhost:3000/api/signup/${id}`,
-        {
-          fullname: fullname,
-          email: email,
-          password: password,
-        }
+        formData
       );
-      const { data } = resp;
-      console.log('data:', data)
-  
-      dispatch(userLogin(data));
+
+      dispatch(userLogin(resp));
       onClose();
       toast({
         title: "Updated successfully",
@@ -76,6 +76,7 @@ function UserProfile() {
       });
     } catch (e) {
       onClose();
+
       toast({
         title: "Something is wrong",
         status: "error",
