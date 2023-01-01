@@ -6,15 +6,18 @@ import {
   Flex,
   Heading,
   Input,
-  Spinner,
+  InputGroup,
+  InputRightElement,
   Text,
   useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
 import axios from "axios";
 
-import Router from "next/router";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 function Signup() {
+  const [show, setShow] = useState(false);
+  const handleClick = () => setShow(!show);
   const toast = useToast();
   const [loading, setloading] = useState(false);
 
@@ -25,6 +28,7 @@ function Signup() {
     password: "",
     img: "https://i.pravatar.cc/300",
   });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setformData({ ...formData, [name]: value });
@@ -32,6 +36,7 @@ function Signup() {
 
   const postUser = async () => {
     const { email, fullname, password } = formData;
+
     if (!email || !fullname || !password) {
       toast({
         title: "All fields are required",
@@ -40,64 +45,41 @@ function Signup() {
         isClosable: true,
       });
     }
-    const { username } = formData;
     try {
-      let resp = await axios.get("http://localhost:3000/api/signup");
+      setloading(true);
+      const res = await axios.post(
+        "http://localhost:8080/user/postUser",
+
+        formData
+      );
+
+      toast({
+        title: `${res.data.message}`,
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
+      setloading(false);
       
-      const { data } = resp;
-
-      let huru = data.find((el) => el.username === username);
-
-      if (huru) {
-        toast({
-          title: "User Already Registered",
-          description: "User Already Registered please proceed to signin",
-          status: "warning",
-          duration: 2000,
-          isClosable: true,
-        });
-      } else {
-        const res = await axios.post(
-          "http://localhost:3000/api/signup",
-          formData
-        );
-        
-        if (!res) {
-          setloading(true);
-        } else {
-          setloading(false);
-        }
-        toast({
-          title: "Signup successfull",
-
-          status: "success",
-          duration: 2000,
-          isClosable: true,
-        });
-        Router.push("/Signin");
-      }
     } catch (e) {
-      alert(`rightcompo condition failed: ${e.message}`);
+      setloading(true);
+      toast({
+        title: `${e.response.data.message}`,
+        status: "warning",
+        duration: 2000,
+        isClosable: true,
+      });
+      setloading(false);
     }
   };
   const handleSubmit = () => {
     postUser();
   };
-  if (loading) {
-    return (
-      <Spinner
-        thickness="4px"
-        speed="0.65s"
-        emptyColor="gray.200"
-        color="blue.500"
-        size="xl"
-      />
-    );
-  }
+
   return (
-    <Center p={"10"}>
+    <Center p={["3", "3", "6", "10"]}>
       <Box
-        w={["300", "420px", "490px", "520px"]}
+        w={["400", "430px", "490px", "520px"]}
         bg={useColorModeValue("white", "white")}
         color={useColorModeValue("black", "black")}
         borderRadius={"2xl"}
@@ -106,7 +88,7 @@ function Signup() {
         <Flex
           direction={"column"}
           align="start"
-          p={["4", "5", "6", "8"]}
+          p={["6", "5", "6", "8"]}
           gap={"3"}
         >
           <Heading>Create Account</Heading>
@@ -141,15 +123,23 @@ function Signup() {
             placeholder="Enter your Email Id"
           ></Input>
           <Text fontSize={"sm"}>Password</Text>
-          <Input
-            borderColor={"black"}
-            type={"text"}
-            name={"password"}
-            onChange={handleChange}
-            placeholder="Enter Your Password"
-          ></Input>
+          <InputGroup size="md">
+            <Input
+              pr="4.5rem"
+              borderColor={"black"}
+              type={show ? "text" : "password"}
+              name={"password"}
+              onChange={handleChange}
+              placeholder="Enter Your Password"
+            />
+            <InputRightElement onClick={handleClick} cursor={"pointer"}>
+              {show ? <ViewIcon boxSize={5} /> : <ViewOffIcon boxSize={5} />}
+            </InputRightElement>
+          </InputGroup>
 
           <Button
+            isLoading={loading}
+            loadingText={"Submitting"}
             onClick={handleSubmit}
             color={"white"}
             size={"lg"}

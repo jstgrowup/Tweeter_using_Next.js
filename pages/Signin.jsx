@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Button,
@@ -6,35 +6,63 @@ import {
   Flex,
   Heading,
   Input,
+  InputGroup,
+  InputRightElement,
   Text,
-  useColorMode,
   useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
+import { useDispatch } from "react-redux";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { userLogin } from "../store/UserRedux/UserActions";
 import axios from "axios";
-
-import { useDispatch, useSelector } from "react-redux";
-import { userLogin } from "../store/UserActions";
-import Router from "next/router";
-import Navbar from "../Components/Navbar";
+import Link from "next/link";
+import { useRouter } from "next/router";
 function Signin() {
+  const [show, setShow] = useState(false);
+  const handleClick = () => setShow(!show);
+  const [loading, setloading] = useState(false);
   const toast = useToast();
   const dispatch = useDispatch();
- 
-
+  const router = useRouter();
   const [formData, setformData] = useState({
-    username: "",
     email: "",
     password: "",
   });
+
   const handleChange = (e) => {
     const { name, value } = e.target;
     setformData({ ...formData, [name]: value });
   };
 
+  const notify = () => {
+    return toast({
+      title: "Welcome! back",
+      description: "You can now proceeed to timeline",
+      position: "top-left",
+      status: "loading",
+      variant: "left-accent",
+      isClosable: true,
+      duration: 2000,
+    });
+  };
+  const welcome = () => {
+    return toast({
+      title: "Welcome! to tweeter",
+      description: "If you already have an account please Login",
+      position: "top-left",
+      status: "loading",
+      variant: "left-accent",
+      isClosable: true,
+      duration: 2000,
+    });
+  };
+  useEffect(() => {
+    welcome();
+  }, []);
   const postUser = async () => {
-    const { email: emu, username: huru, password: pasu } = formData;
-    if (!emu || !huru || !pasu) {
+    const { email, password } = formData;
+    if (!email || !password) {
       toast({
         title: "All fields are required",
         status: "warning",
@@ -42,41 +70,44 @@ function Signin() {
         isClosable: true,
       });
     }
-    const { username, email, password } = formData;
     try {
-      let resp = await axios.get("http://localhost:3000/api/signup");
-      const { data } = resp;
-      console.log('data:', data)
-
-      let huru = data.find(
-        (el) =>
-          el.username === username &&
-          el.password === password &&
-          el.email === email
+      setloading(true);
+      const res = await axios.post(
+        "http://localhost:8080/user/login",
+        formData
       );
-      if (huru) {
-        toast({
-          title: "Signin successfull",
-          status: "success",
-          duration: 2000,
-          isClosable: true,
-        });
-        dispatch(userLogin(huru));
-        Router.push("/UserProfile");
-      } else {
-        alert("Login failure");
-      }
+
+      const {
+        data: { token, message },
+      } = res;
+      toast({
+        title: message,
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
+      dispatch(userLogin(token));
+      notify();
+      setloading(false);
+      router.push("/");
     } catch (e) {
-      alert("Login failure");
+      setloading(true);
+      toast({
+        title: `${e.response.data.message}`,
+        status: "warning",
+        duration: 3000,
+        isClosable: true,
+      });
+      setloading(false);
     }
   };
+
   const handleSubmit = () => {
     postUser();
   };
   return (
     <div>
       {" "}
-      <Navbar/>
       <Center p={"10"}>
         <Box
           w={["300", "420px", "490px", "520px"]}
@@ -88,27 +119,15 @@ function Signin() {
           <Flex
             direction={"column"}
             align="start"
-            p={["4", "5", "6", "8"]}
+            p={["8", "5", "6", "8"]}
             gap={"3"}
           >
-            <Heading>Sign In</Heading>
-            <Text fontSize={"sm"} align={"start"}>
-              User Name{" "}
-            </Text>
-            <Input
-              // color={"black"}
-              borderColor={"black"}
-              type={"text"}
-              name={"username"}
-              onChange={handleChange}
-              placeholder="Enter your User Name"
-            ></Input>
+            <Heading>Log In</Heading>
 
             <Text fontSize={"sm"} align={"start"}>
-              EMAIL ID{" "}
+              Email Id{" "}
             </Text>
             <Input
-              // color={"black"}
               borderColor={"black"}
               type={"text"}
               name={"email"}
@@ -116,16 +135,28 @@ function Signin() {
               placeholder="Enter your Email Id"
             ></Input>
             <Text fontSize={"sm"}>Password</Text>
-            <Input
-              // color={"black"}
-              borderColor={"black"}
-              type={"text"}
-              name={"password"}
-              onChange={handleChange}
-              placeholder="Enter Your Password"
-            ></Input>
-
+            <InputGroup size="md">
+              <Input
+                pr="4.5rem"
+                borderColor={"black"}
+                type={show ? "text" : "password"}
+                name={"password"}
+                onChange={handleChange}
+                placeholder="Enter Your Password"
+              />
+              <InputRightElement onClick={handleClick} cursor={"pointer"}>
+                {show ? <ViewIcon boxSize={5} /> : <ViewOffIcon boxSize={5} />}
+              </InputRightElement>
+            </InputGroup>
+            <Link href={"/signup"}>
+              <Text>
+                Dont Have an account?{" "}
+                <span style={{ color: "red" }}>Create an Account</span>{" "}
+              </Text>
+            </Link>
             <Button
+              isLoading={loading}
+              loadingText={"Submitting"}
               onClick={handleSubmit}
               _hover={{ bg: "#24AEB1" }}
               color={"white"}
@@ -133,7 +164,7 @@ function Signin() {
               width={"100%"}
               bg={"#24AEB1"}
             >
-              Sign In
+              Log In
             </Button>
           </Flex>
         </Box>

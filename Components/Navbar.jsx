@@ -1,68 +1,257 @@
 import React from "react";
 import {
   Button,
-  Flex,
+  HStack,
   useColorMode,
   useColorModeValue,
+  Drawer,
+  DrawerBody,
+  DrawerCloseButton,
+  DrawerContent,
+  DrawerHeader,
+  DrawerOverlay,
+  useDisclosure,
+  Box,
+  Flex,
+  Image,
+  Popover,
+  PopoverTrigger,
+  Portal,
+  PopoverContent,
+  PopoverBody,
+  VStack,
+  useToast,
 } from "@chakra-ui/react";
-import Link from "next/link";
+import { FaUserAlt, FaUserCircle } from "react-icons/fa";
+import { HamburgerIcon } from "@chakra-ui/icons";
+
 import { BsSun, BsMoonStarsFill } from "react-icons/bs";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutUser } from "../store/UserRedux/UserActions";
 
+import Link from "next/link";
+import { useRouter } from "next/router";
 function Navbar() {
-  const { data } = useSelector((store) => store.user);
-  const { colorMode, toggleColorMode } = useColorMode();
+  const dispatch = useDispatch();
 
+  const toast = useToast();
+  const router = useRouter();
+
+  const {
+    data: { img, username },
+    token,
+  } = useSelector((store) => store.user);
+  const handleLogout = () => {
+    router.push("/");
+    dispatch(logoutUser());
+
+    toast({
+      title: "Logout successfull",
+      status: "success",
+      duration: 1000,
+      isClosable: true,
+    });
+  };
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const { colorMode, toggleColorMode } = useColorMode();
   return (
     <div>
       <Flex
-        bg={useColorModeValue("#166FE6", "#166FE6")}
+        justify={"space-between"}
         w={"100%"}
-        h={"100px"}
-        justify={"space-around"}
-        align={"center"}
+        h={["80px", "80px", "100px", "100px"]}
+        bg={useColorModeValue("#166FE6", "#166FE6")}
       >
-        <Link href={"/"}>
-          <Button
-            bg={useColorModeValue("white", "black")}
-            color={useColorModeValue("black", "white")}
-          >
-            Signup Page
-          </Button>
-        </Link>
-        <Link href={"/Signin"}>
-          <Button
-            bg={useColorModeValue("white", "black")}
-            color={useColorModeValue("black", "white")}
-          >
-            Sign in
-          </Button>
-        </Link>
-        <Link href={"/UserProfile"}>
-          <Button
-            bg={useColorModeValue("white", "black")}
-            color={useColorModeValue("black", "white")}
-          >
-            User Profile
-          </Button>
-        </Link>
-        <Link href={"/TimeLine"}>
-          <Button
-            bg={useColorModeValue("white", "black")}
-            color={useColorModeValue("black", "white")}
-          >
-            Timeline
-          </Button>
-        </Link>
-        <Button
-          bg={useColorModeValue("white", "black")}
-          aria-label="Toggle Color Mode"
-          onClick={toggleColorMode}
-          _focus={{ boxShadow: "none" }}
-          w="fit-content"
+        <Flex height={"100%"} w={["17%", "15%", "13%", "7%", "5%"]}>
+          <Image
+            cursor={"pointer"}
+            onClick={() => router.push("/")}
+            src="https://notion-emojis.s3-us-west-2.amazonaws.com/prod/svg-twitter/1f426.svg"
+          />
+        </Flex>
+
+        <HStack
+          display={{ base: "none", md: "flex" }}
+          bg={useColorModeValue("#166FE6", "#166FE6")}
+          w={"100%"}
+          h={"100px"}
+          justifyContent={"space-between"}
+          align={"center"}
         >
-          {colorMode === "light" ? <BsMoonStarsFill /> : <BsSun />}
-        </Button>
+          <Box></Box>
+          <Box>
+            <Button
+              borderRadius={"full"}
+              bg={useColorModeValue("white", "black")}
+              aria-label="Toggle Color Mode"
+              onClick={toggleColorMode}
+              _focus={{ boxShadow: "none" }}
+              w="fit-content"
+            >
+              {colorMode === "light" ? <BsMoonStarsFill /> : <BsSun />}
+            </Button>
+            <Popover trigger="hover">
+              <PopoverTrigger>
+                <Button
+                  size={"lg"}
+                  variant={"none"}
+                  fontFamily={"sans-serif"}
+                  color={"white"}
+                  leftIcon={
+                    token ? (
+                      <Image src={img} boxSize={"10"} borderRadius={"full"} />
+                    ) : (
+                      <FaUserCircle
+                        style={{ color: "white", fontSize: "1.7em" }}
+                      />
+                    )
+                  }
+                >
+                  {token ? username : "Login"}
+                </Button>
+              </PopoverTrigger>
+              <Portal>
+                <PopoverContent bg={"#166FE6"} color={"white"}>
+                  <PopoverBody>
+                    {token ? (
+                      <VStack>
+                        <Link href={"/userProfile"}>
+                          <Button variant={"none"} bg={"#166FE6"}>
+                            Profile
+                          </Button>
+                        </Link>
+
+                        <Button
+                          onClick={handleLogout}
+                          variant={"none"}
+                          bg={"#166FE6"}
+                        >
+                          Logout
+                        </Button>
+                      </VStack>
+                    ) : (
+                      <VStack>
+                        <Link href={"/signin"}>
+                          <Button variant={"none"}>Log in</Button>
+                        </Link>
+                        <Link href={"/signup"}>
+                          <Button variant={"none"}>Create an Account</Button>
+                        </Link>
+                      </VStack>
+                    )}
+                  </PopoverBody>
+                </PopoverContent>
+              </Portal>
+            </Popover>
+          </Box>
+        </HStack>
+        <Flex
+          height={["70px", "70px", "0px", "0px"]}
+          align={"center"}
+          justify={"flex-end"}
+          bg={useColorModeValue("#166FE6", "#166FE6")}
+        >
+          <Button
+            display={{ base: "flex", md: "none" }}
+            variant={"none"}
+            onClick={onOpen}
+          >
+            <HamburgerIcon boxSize={8} color={"white"} />
+          </Button>
+        </Flex>
+        <Drawer
+          onClose={onClose}
+          isOpen={isOpen}
+          size={"full"}
+          bg={useColorModeValue("#166FE6", "#166FE6")}
+        >
+          <DrawerOverlay />
+          <DrawerContent>
+            <DrawerCloseButton />
+            <DrawerHeader></DrawerHeader>
+            <DrawerBody>
+              {!token ? (
+                <Flex align={"center"} direction={"column"}>
+                  <Box w={"full"} mb={3}>
+                    <Link href={"/signin"}>
+                      <Button
+                        w={"full"}
+                        size={"lg"}
+                        bg={"#166FE6"}
+                        color={"white"}
+                        letterSpacing={1}
+                      >
+                        Login
+                      </Button>
+                    </Link>
+                  </Box>
+                  <Box w={"full"} mb={3}>
+                    <Link href={"/signup"}>
+                      <Button
+                        w={"full"}
+                        size={"lg"}
+                        bg={"#166FE6"}
+                        color={"white"}
+                        letterSpacing={1}
+                      >
+                        Signup Page
+                      </Button>
+                    </Link>
+                  </Box>
+                  <Button
+                    size={"lg"}
+                    bg={"whatsapp.400"}
+                    aria-label="Toggle Color Mode"
+                    onClick={toggleColorMode}
+                    _focus={{ boxShadow: "none" }}
+                    w="fit-content"
+                  >
+                    {colorMode === "light" ? <BsMoonStarsFill /> : <BsSun />}
+                  </Button>
+                </Flex>
+              ) : (
+                <Flex align={"center"} direction={"column"}>
+                  <Box w={"full"} mb={3}>
+                    <Link href={"/profile"}>
+                      <Button
+                        w={"full"}
+                        size={"lg"}
+                        bg={"#166FE6"}
+                        color={"white"}
+                        letterSpacing={1}
+                        leftIcon={<FaUserAlt />}
+                      >
+                        Profile
+                      </Button>
+                    </Link>
+                  </Box>
+                  <Box w={"full"} mb={3}>
+                    <Link href={"/"}>
+                      <Button
+                        w={"full"}
+                        size={"lg"}
+                        bg={"#166FE6"}
+                        color={"white"}
+                        letterSpacing={1}
+                      >
+                        Timeline
+                      </Button>
+                    </Link>
+                  </Box>
+                  <Button
+                    bg={"whatsapp.400"}
+                    aria-label="Toggle Color Mode"
+                    onClick={toggleColorMode}
+                    _focus={{ boxShadow: "none" }}
+                    w="fit-content"
+                  >
+                    {colorMode === "light" ? <BsMoonStarsFill /> : <BsSun />}
+                  </Button>
+                </Flex>
+              )}
+            </DrawerBody>
+          </DrawerContent>
+        </Drawer>
       </Flex>
     </div>
   );

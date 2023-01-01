@@ -1,3 +1,4 @@
+import Navbar from "../Components/Navbar";
 import {
   Avatar,
   Box,
@@ -11,8 +12,8 @@ import {
   useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
-import "../styles/Timeline.module.css";
-import React, { useEffect, useState } from "react";
+// import "./Timeline.css";
+import React, { useEffect, useRef, useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -22,33 +23,35 @@ import {
   ModalBody,
   ModalCloseButton,
 } from "@chakra-ui/react";
-
 import axios from "axios";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { useToast } from "@chakra-ui/react";
 import { BiDislike, BiLike } from "react-icons/bi";
-import Navbar from "../Components/Navbar";
+
+import DeleteButton from "../Components/DeleteButton";
+import { getTheUser } from "../store/UserRedux/UserActions";
 const getData = async () => {
   try {
-    const res = await axios.get("http://localhost:3000/api/posts");
+    const res = await axios.get("http://localhost:8080/posts");
     const { data } = res;
+
     return data;
   } catch (error) {
     return error.message;
   }
 };
-function TimeLine() {
+export default function Home() {
   const { isOpen, onOpen, onClose } = useDisclosure();
-  const { data } = useSelector((store) => store.user);
-
+  const { data, token } = useSelector((store) => store.user);
   const toast = useToast();
   const [searchdata, setdata] = useState([]);
   const [wholeData, setwholeData] = useState([]);
+  const dispatch = useDispatch();
   const [bool, setbool] = useState(false);
   const [text, settext] = useState("");
   const [url, seturl] = useState("");
-  const [likes, setlikes] = useState(0);
-  const [dislikes, setdislikes] = useState(0);
+  const inputRef = useRef();
+  const [files, setfiles] = useState("");
   const handleChange = async (e) => {
     let huru = e.target.value;
     try {
@@ -63,7 +66,12 @@ function TimeLine() {
 
       setdata(data);
     } catch (error) {
-      console.log(error.message);
+      toast({
+        title: `${error.message}`,
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
     }
   };
 
@@ -71,83 +79,97 @@ function TimeLine() {
     seturl(url);
     onClose();
   };
+
   useEffect(() => {
     getData()
       .then((res) => setwholeData(res))
       .catch((er) => console.log(er));
-  }, [bool, likes, dislikes]);
+    dispatch(getTheUser(token));
+  }, [bool]);
   const handleSubmit = async () => {
+    const respo = {
+      userId: data._id,
+      userName: data.username,
+      caption: text,
+      url: url,
+    };
+    if (!url || !text) {
+      toast({
+        title: "All the inputs are mendatory",
+        description:
+          "For a successfull post you have to put the cption and select a gif",
+        status: "warning",
+        duration: 2000,
+        isClosable: true,
+      });
+      return;
+    }
     try {
-      const respo = {
-        username: data.username,
-        title: text,
-        url: url,
-        likes: likes,
-        dislikes: dislikes,
-      };
-
-      const res = await axios.post("http://localhost:3000/api/posts", respo);
-
+      await axios.post("http://localhost:8080/posts/createPost", respo);
       setbool(!bool);
-      settext("");
       seturl(null);
       toast({
-        title: "Post successfull",
+        title: "Posted successfull",
         status: "success",
         duration: 2000,
         isClosable: true,
       });
     } catch (error) {
-      alert(error.message);
+      toast({
+        title: `${error.message}`,
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
+    }
+  };
+  const handleDelete = async (id) => {
+    try {
+      await axios.post(`http://localhost:8080/posts/delete`, {
+        id: id,
+      });
+      toast({
+        title: "Post deleted successfully",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
+      setbool(!bool);
+    } catch (error) {
+      toast({
+        title: `${error.message}`,
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
     }
   };
   const handleLikesAndDislikes = async (id, type) => {
     try {
-      if (type === "like") {
-        setlikes((prev) => prev + 1);
-        let resp = await axios.patch(
-          `http://localhost:3000/api/posts/${id}`,
-          {
-            likes: likes,
-            type: "like",
-          }
-        );
-      } else {
-        setdislikes((prev) => prev + 1);
-        let resp = await axios.patch(
-          `http://localhost:3000/api/posts/${id}`,
-          {
-            dislikes: dislikes,
-            type: "dislike",
-          }
-        );
-      }
-    } catch (error) {}
-  };
-  const handleDelete = async (id) => {
-    try {
-      let resp = await axios.delete(
-        `https://mock-v41w.onrender.com/posts/${id}`
-      );
-      toast({
-        title: "Post deleted successfully",
-
-        status: "success",
-        duration: 2000,
-        isClosable: true,
+      await axios.post("http://localhost:8080/posts/likesAndDislikes", {
+        id: id,
+        type: type,
       });
       setbool(!bool);
     } catch (error) {
-      alert(error.message);
+      toast({
+        title: `${error.message}`,
+
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
     }
+  };
+  const handleFiles = (e) => {
+    setfiles(e.currentTarget.files[0]);
   };
   return (
     <div>
-      <Navbar />
       <Center>
         <Box
-          w={"50%"}
-          p={"7"}
+          w={["90%", "80%", "70%", "50%"]}
+          p={["2", "4", "5", "7"]}
           boxShadow={"2xl"}
           borderRadius={"2xl"}
           bg={"white"}
@@ -157,6 +179,7 @@ function TimeLine() {
             placeholder="Enter your caption"
             border={"1px"}
             borderColor={"black"}
+            name="caption"
             onChange={(e) => settext(e.target.value)}
           />
           {url && <Image w={"100%"} h={"200px"} src={url} />}
@@ -175,25 +198,35 @@ function TimeLine() {
                 <ModalHeader>Search Your GIPHY</ModalHeader>
                 <ModalCloseButton />
                 <ModalBody>
-                  <Input
-                    onChange={handleChange}
-                    placeholder="Search your GIPHY"
-                  ></Input>
+                  <Box
+                    style={{
+                      overflowY: "scroll",
+                      maxHeight: "450px",
+                    }}
+                  >
+                    <Input
+                      onChange={handleChange}
+                      placeholder="Search your GIPHY"
+                    />
 
-                  {searchdata?.map((el) => {
-                    const { images } = el;
+                    {searchdata?.map((el) => {
+                      const { images } = el;
 
-                    return (
-                      <Box
-                        key={el.id}
-                        onClick={() => handlePost(images.preview_gif.url)}
-                      >
-                        <Image w={"100%"} src={images.preview_gif.url}></Image>
-                      </Box>
-                    );
-                  })}
+                      return (
+                        <Box
+                          cursor={"pointer"}
+                          key={el.id}
+                          onClick={() => handlePost(images.preview_gif.url)}
+                        >
+                          <Image
+                            w={"100%"}
+                            src={images.preview_gif.url}
+                          ></Image>
+                        </Box>
+                      );
+                    })}
+                  </Box>
                 </ModalBody>
-
                 <ModalFooter>
                   <Button colorScheme="blue" mr={3} onClick={onClose}>
                     Close
@@ -201,6 +234,7 @@ function TimeLine() {
                 </ModalFooter>
               </ModalContent>
             </Modal>
+
             <Button onClick={handleSubmit} colorScheme={"blue"} color={"white"}>
               POST
             </Button>
@@ -210,9 +244,8 @@ function TimeLine() {
       <Center>
         <Flex
           mt={"4"}
-          w={"50%"}
+          w={["95%", "80%", "70%", "50%"]}
           gap={"4"}
-          // bg={useColorModeValue("white", "white")}
           color={useColorModeValue("black", "black")}
           direction={"column"}
           align={"flex-start"}
@@ -226,38 +259,34 @@ function TimeLine() {
                 w={"100%"}
                 direction={"column"}
                 align={"flex-start"}
-                key={el.id}
+                key={el._id}
               >
                 <Flex w={"100%"} align={"center"} justify={"space-between"}>
                   <Flex align={"center"} gap={"3"}>
                     <Avatar size="md" src={data.img} />
-                    <Text fontSize={"lg"} fontWeight={"bold"}>
-                      {" "}
-                      {el.username}
-                    </Text>
+                    <Flex direction={"column"}>
+                      <Text fontSize={"lg"} fontWeight={"bold"}>
+                        {" "}
+                        {el.userName}
+                      </Text>
+                      <Text fontSize={"lg"}> {el.caption}</Text>
+                    </Flex>
                   </Flex>
-                  {el.username === data.username && (
-                    <Button
-                      onClick={() => handleDelete(el.id)}
-                      bg={"red.400"}
-                      color={"white"}
-                      borderRadius={"3xl"}
-                    >
-                      DELETE
-                    </Button>
+                  {el.userId === data._id && (
+                    <DeleteButton handleDelete={handleDelete} _id={el._id} />
                   )}
                 </Flex>
                 <Text>{el.title}</Text>
                 <Image w={"100%"} h={"300px"} src={el.url}></Image>
                 <Flex ml={"2"} gap={"3"}>
                   <BiLike
-                    className="huru"
-                    onClick={() => handleLikesAndDislikes(el.id, "like")}
+                    // className="huru"
+                    onClick={() => handleLikesAndDislikes(el._id, "like")}
                   />
                   <Text fontWeight={"bold"}>{el.likes}</Text>
                   <BiDislike
-                    className="huru"
-                    onClick={() => handleLikesAndDislikes(el.id, "dislikes")}
+                    // className="huru"
+                    onClick={() => handleLikesAndDislikes(el._id, "dislikes")}
                   />
 
                   <Text fontWeight={"bold"}>{el.dislikes}</Text>
@@ -270,5 +299,3 @@ function TimeLine() {
     </div>
   );
 }
-
-export default TimeLine;

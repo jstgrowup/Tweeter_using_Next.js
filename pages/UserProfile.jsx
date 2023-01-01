@@ -10,10 +10,8 @@ import {
   Flex,
   Input,
   useToast,
-} from "@chakra-ui/react";
-import React, { useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import {
+  Image,
+  useColorModeValue,
   Modal,
   ModalOverlay,
   ModalContent,
@@ -22,51 +20,63 @@ import {
   ModalBody,
   ModalCloseButton,
 } from "@chakra-ui/react";
+import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+
 import axios from "axios";
+import { BiDislike, BiLike } from "react-icons/bi";
 
-import { userLogin } from "../store/UserActions";
-import Router from "next/router";
-import Navbar from "../Components/Navbar";
+import { getTheUser, logoutUser } from "../store/UserRedux/UserActions";
+import DeleteButton from "../Components/DeleteButton";
+import { Logoutfunction } from "../utils/Logout";
+import { useRouter } from "next/router";
+const getData = async (token) => {
+  try {
+    const res = await axios.post("http://localhost:8080/posts/getUsersPosts", {
+      token: token,
+    });
+    const { data } = res;
+    return data;
+  } catch (error) {
+    return error.message;
+  }
+};
 function UserProfile() {
-  const { data } = useSelector((store) => store.user);
-  
-  useEffect(() => {
-    
-  
-   
-  }, [data])
-  
-  
-  const toast = useToast();
+  const { data, token } = useSelector((store) => store.user);
 
+  const [bool, setbool] = useState(false);
+  const dispatch = useDispatch();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+  const [wholeData, setwholeData] = useState([]);
+
+  const toast = useToast();
+  const router = useRouter();
   const [formData, setformData] = useState({
     fullname: "",
     email: "",
     password: "",
   });
-  const dispatch = useDispatch();
   const handleChange = (e) => {
     const { name, value } = e.target;
     setformData({ ...formData, [name]: value });
   };
 
-  const { isOpen, onOpen, onClose } = useDisclosure();
   const handleUpdate = () => {
     onOpen();
   };
   const postUser = async (id) => {
-    const { email: emu, fullname: huru, password: pasu } = formData;
-    if (!emu || !huru || !pasu) {
+    const { fullname, email, password } = formData;
+    if (!fullname || !email || !password) {
       alert("please enter all the required fields");
     }
 
     try {
-      let resp = await axios.patch(
-        `http://localhost:3000/api/signup/${id}`,
-        formData
-      );
+      await axios.patch(`http://localhost:8080/user/updateUser/${id}`, {
+        fullname: fullname,
+        email: email,
+        password: password,
+      });
 
-      dispatch(userLogin(resp));
       onClose();
       toast({
         title: "Updated successfully",
@@ -74,11 +84,38 @@ function UserProfile() {
         duration: 2000,
         isClosable: true,
       });
+      dispatch(getTheUser(token));
     } catch (e) {
       onClose();
-
       toast({
         title: "Something is wrong",
+        status: "error",
+        duration: 2000,
+        isClosable: true,
+      });
+    }
+  };
+  useEffect(() => {
+    getData(token)
+      .then((res) => setwholeData(res))
+      .catch((er) => console.log(er));
+    dispatch(getTheUser(token));
+  }, [bool]);
+  const handlePostsDelete = async (id) => {
+    try {
+      await axios.post(`http://localhost:8080/posts/delete`, {
+        id: id,
+      });
+      toast({
+        title: "Post deleted successfully",
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
+      setbool(!bool);
+    } catch (error) {
+      toast({
+        title: `${error.message}`,
         status: "error",
         duration: 2000,
         isClosable: true,
@@ -90,26 +127,40 @@ function UserProfile() {
   };
   const handleDelete = async (id) => {
     try {
-      let resp = await axios.delete(
-        `https://mock-v41w.onrender.com/users/${id}`
-      );
+      await axios.post("http://localhost:8080/user/delete", { id: id });
       toast({
         title: "Deleted successfully",
         status: "success",
         duration: 2000,
         isClosable: true,
       });
-      Router.push("/");
+      dispatch(logoutUser());
+      router.push("/signin");
+      toast({
+        title: "Account deleted successfully",
+        status: "success",
+        duration: 1000,
+        isClosable: true,
+      });
     } catch (error) {
       alert(error.message);
     }
   };
+  const handleLogout = () => {
+    router.push("/");
+    dispatch(logoutUser());
+
+    toast({
+      title: "Logout successfull",
+      status: "success",
+      duration: 1000,
+      isClosable: true,
+    });
+  };
   return (
     <>
-      <Navbar />
-
       <Center>
-        <Center w={"50%"} h={"60%"}>
+        <Center w={["90%", "80%", "70%", "50%"]}>
           <Box
             height={"100%"}
             w={"100%"}
@@ -138,10 +189,7 @@ function UserProfile() {
             <Heading fontSize={"2xl"} fontFamily={"body"}>
               @{data.username}
             </Heading>
-            <Heading fontSize={"2xl"} fontFamily={"body"}>
-              {data.fullname}
-            </Heading>
-            <Text fontWeight={600} color={"gray.500"} mb={4}>
+            <Text fontWeight={600} mb={4}>
               {data.email}
             </Text>
             <Stack mt={8} direction={"row"} spacing={4}>
@@ -158,22 +206,23 @@ function UserProfile() {
                 Followers {"23"}
               </Button>
               <Button
+                onClick={handleLogout}
                 flex={1}
                 fontSize={"md"}
                 rounded={"full"}
-                bg={"blue.400"}
+                bg={"#48BB78"}
                 color={"white"}
                 boxShadow={
                   "0px 1px 25px -5px rgb(66 153 225 / 48%), 0 10px 10px -5px rgb(66 153 225 / 43%)"
                 }
                 _hover={{
-                  bg: "blue.500",
+                  bg: "#48BB78",
                 }}
                 _focus={{
-                  bg: "blue.500",
+                  bg: "#48BB78",
                 }}
               >
-                Following {"23"}
+                Logout
               </Button>
             </Stack>
             <Stack mt={8} direction={"row"} spacing={4}>
@@ -183,9 +232,12 @@ function UserProfile() {
                 color={"white"}
                 fontSize={"sm"}
                 rounded={"full"}
-                bg={"green.300"}
+                bg={"#ED8936"}
+                _hover={{
+                  bg: "#ED8936",
+                }}
                 _focus={{
-                  bg: "green.300",
+                  bg: "#ED8936",
                 }}
               >
                 Edit Profile
@@ -225,7 +277,7 @@ function UserProfile() {
                       ></Input>
 
                       <Button
-                        onClick={() => handleSubmit(data.id)}
+                        onClick={() => handleSubmit(data._id)}
                         color={"white"}
                         size={"lg"}
                         width={"100%"}
@@ -249,15 +301,15 @@ function UserProfile() {
                 rounded={"full"}
                 bg={"red.500"}
                 color={"white"}
-                onClick={() => handleDelete(data.id)}
+                onClick={() => handleDelete(data._id)}
                 boxShadow={
                   "0px 1px 25px -5px rgb(66 153 225 / 48%), 0 10px 10px -5px rgb(66 153 225 / 43%)"
                 }
                 _hover={{
-                  bg: "blue.500",
+                  bg: "red.500",
                 }}
                 _focus={{
-                  bg: "blue.500",
+                  bg: "red.500",
                 }}
               >
                 Delete Account
@@ -266,6 +318,66 @@ function UserProfile() {
           </Box>
         </Center>
       </Center>
+      <Center>
+        <Heading>Your Posts</Heading>
+      </Center>
+      <Flex gap={"3"} align={"center"} direction={"column"}>
+        {wholeData.length > 0 ? (
+          wholeData.map((el) => {
+            return (
+              <Flex
+                boxShadow={"2xl"}
+                borderRadius={"2xl"}
+                bg={"white"}
+                w={["90%", "80%", "70%", "50%"]}
+                direction={"column"}
+                align={"flex-start"}
+                color={useColorModeValue("black", "black")}
+                key={el._id}
+              >
+                <Flex w={"100%"} align={"center"} justify={"space-between"}>
+                  <Flex align={"center"} gap={"3"}>
+                    <Avatar border={"2px"} size="md" src={data.img} />
+                    <Flex direction={"column"} gap={"1"}>
+                      <Text fontSize={"lg"} fontWeight={"bold"}>
+                        {" "}
+                        {el.userName}
+                      </Text>
+                      <Text fontSize={"lg"} fontWeight={"bold"}>
+                        {" "}
+                        {el.caption}
+                      </Text>
+                    </Flex>
+                  </Flex>
+                  {el.userName === data.username && (
+                    <DeleteButton
+                      handleDelete={handlePostsDelete}
+                      _id={el._id}
+                    />
+                  )}
+                </Flex>
+                <Text>{el.title}</Text>
+                <Image w={"100%"} h={"300px"} src={el.url}></Image>
+                <Flex ml={"2"} gap={"3"}>
+                  <BiLike
+                    className="huru"
+                    onClick={() => handleLikesAndDislikes(el._id, "like")}
+                  />
+                  <Text fontWeight={"bold"}>{el.likes}</Text>
+                  <BiDislike
+                    className="huru"
+                    onClick={() => handleLikesAndDislikes(el._id, "dislikes")}
+                  />
+
+                  <Text fontWeight={"bold"}>{el.dislikes}</Text>
+                </Flex>
+              </Flex>
+            );
+          })
+        ) : (
+          <Image src="https://img.republicworld.com/republic-prod/stories/promolarge/xhdpi/1kutzil5lj0nvfsf_1596544016.jpeg" />
+        )}
+      </Flex>
     </>
   );
 }
