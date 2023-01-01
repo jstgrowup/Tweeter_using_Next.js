@@ -50,8 +50,7 @@ export default function Home() {
   const [bool, setbool] = useState(false);
   const [text, settext] = useState("");
   const [url, seturl] = useState("");
-  const inputRef = useRef();
-  const [files, setfiles] = useState("");
+
   const handleChange = async (e) => {
     let huru = e.target.value;
     try {
