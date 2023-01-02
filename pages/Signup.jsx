@@ -26,7 +26,9 @@ function Signup() {
     email: "",
     fullname: "",
     password: "",
-    img: "https://i.pravatar.cc/300",
+    img: `https://randomuser.me/api/portraits/men/${Math.floor(
+      Math.random() * 10
+    )}.jpg`,
   });
 
   const handleChange = (e) => {
@@ -48,7 +50,7 @@ function Signup() {
     try {
       setloading(true);
       const res = await axios.post(
-        "http://localhost:8080/user/postUser",
+        "http://localhost:3000/api/users/postUser",
 
         formData
       );
@@ -60,7 +62,6 @@ function Signup() {
         isClosable: true,
       });
       setloading(false);
-      
     } catch (e) {
       setloading(true);
       toast({

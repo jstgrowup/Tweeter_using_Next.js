@@ -89,6 +89,7 @@ function Signin() {
       dispatch(userLogin(token));
       notify();
       setloading(false);
+      Cookies.set("loggedin", true);
       router.push("/");
     } catch (e) {
       setloading(true);

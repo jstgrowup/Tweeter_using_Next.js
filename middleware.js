@@ -1,13 +1,8 @@
 import { NextResponse } from "next/server";
-import { useSelector } from "react-redux";
+export default function middleware(req) {
+  let verify = req.cookies.get("loggedin");
 
-export function middleware(req) {
-  const url = req.url;
-  console.log('url:', url)
-
-  const token = null
-
-  if (!token ) {
+  if (!verify) {
     return NextResponse.redirect("http://localhost:3000/signin");
   }
   return NextResponse.next();
