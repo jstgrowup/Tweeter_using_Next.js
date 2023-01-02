@@ -10,10 +10,10 @@ const app = nc();
 Connectdatabse();
 app.post(async (req, res) => {
   const { email, password } = req.body;
-
   try {
     const { error } = loginvalidate(req.body);
     if (error) {
+     
       return res.status(401).send({ message: error.details[0].message });
     }
     const data = await userModel.findOne({

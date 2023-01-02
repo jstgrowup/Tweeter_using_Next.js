@@ -22,12 +22,9 @@ import {
 } from "@chakra-ui/react";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-
 import axios from "axios";
 import { BiDislike, BiLike } from "react-icons/bi";
-
 import { getTheUser, logoutUser } from "../store/UserRedux/UserActions";
-
 import { useRouter } from "next/router";
 import DeleteButton from "../Components/DeleteButton";
 const getData = async (token) => {
@@ -48,12 +45,10 @@ const getData = async (token) => {
 };
 function UserProfile() {
   const { data, token } = useSelector((store) => store.user);
-
   const [bool, setbool] = useState(false);
   const dispatch = useDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [wholeData, setwholeData] = useState([]);
-
   const toast = useToast();
   const router = useRouter();
   const [formData, setformData] = useState({
@@ -76,7 +71,7 @@ function UserProfile() {
     }
 
     try {
-      await axios.patch(`http://localhost:3000/api/user/updateUser/${id}`, {
+      await axios.patch(`http://localhost:3000/api/users/${id}`, {
         fullname: fullname,
         email: email,
         password: password,
@@ -132,7 +127,7 @@ function UserProfile() {
   };
   const handleDelete = async (id) => {
     try {
-      await axios.post("http://localhost:3000/api/user/delete", { id: id });
+      await axios.post("http://localhost:3000/api/users/delete", { id: id });
       toast({
         title: "Deleted successfully",
         status: "success",

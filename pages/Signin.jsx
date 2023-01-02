@@ -78,11 +78,9 @@ function Signin() {
         "http://localhost:3000/api/users/login",
         formData
       );
-
       const {
         data: { token, message },
       } = res;
-
       toast({
         title: message,
         status: "success",
@@ -97,8 +95,7 @@ function Signin() {
     } catch (e) {
       setloading(true);
       toast({
-        // title: `${e.response.data.message}`,
-        title: "issues",
+        title: `${e.response.data.message}`,
 
         status: "warning",
         duration: 3000,
@@ -112,7 +109,7 @@ function Signin() {
     postUser();
   };
   return (
-    <div>
+    <Box bg={useColorModeValue("#CCDEFF", "black")}>
       {" "}
       <Center p={"10"}>
         <Box
@@ -175,7 +172,7 @@ function Signin() {
           </Flex>
         </Box>
       </Center>
-    </div>
+    </Box>
   );
 }
 

@@ -47,9 +47,9 @@ export default function Home() {
   const { data, token } = useSelector((store) => store.user);
   const toast = useToast();
   const [searchdata, setdata] = useState([]);
-  const [wholeData, setwholeData] = useState([]);
+
   const dispatch = useDispatch();
-  const router = useRouter();
+  const [wholeData, setwholeData] = useState([]);
   const [bool, setbool] = useState(false);
   const [text, settext] = useState("");
   const [url, seturl] = useState("");
@@ -82,7 +82,7 @@ export default function Home() {
 
   useEffect(() => {
     getData()
-      .then((res) => setwholeData(res))
+      .then((main) => setwholeData(main))
       .catch((er) => console.log(er));
     dispatch(getTheUser(token));
   }, [bool]);
@@ -162,10 +162,9 @@ export default function Home() {
     }
   };
 
-  
   return (
     <>
-      <div>
+      <Box bg={useColorModeValue("#CCDEFF", "black")}>
         <Center>
           <Box
             w={["90%", "80%", "70%", "50%"]}
@@ -258,9 +257,12 @@ export default function Home() {
               return (
                 <Flex
                   boxShadow={"2xl"}
+                  border={"2px"}
+                  borderColor={"white"}
                   borderRadius={"2xl"}
-                  bg={"white"}
                   w={"100%"}
+                  bgColor={useColorModeValue("white", "black")}
+                  color={useColorModeValue("black", "white")}
                   direction={"column"}
                   align={"flex-start"}
                   key={el._id}
@@ -284,12 +286,12 @@ export default function Home() {
                   <Image w={"100%"} h={"300px"} src={el.url}></Image>
                   <Flex ml={"2"} gap={"3"}>
                     <BiLike
-                      // className="huru"
+                      className="huru"
                       onClick={() => handleLikesAndDislikes(el._id, "like")}
                     />
                     <Text fontWeight={"bold"}>{el.likes}</Text>
                     <BiDislike
-                      // className="huru"
+                      className="huru"
                       onClick={() => handleLikesAndDislikes(el._id, "dislikes")}
                     />
 
@@ -300,7 +302,14 @@ export default function Home() {
             })}
           </Flex>
         </Center>
-      </div>
+      </Box>
     </>
   );
+}
+export async function getServerSideProps() {
+  const res = await axios.get("http://localhost:3000/api/posts");
+  const { data } = res;
+  return {
+    props: { wholeData: data },
+  };
 }

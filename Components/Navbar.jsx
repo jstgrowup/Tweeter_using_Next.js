@@ -33,10 +33,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 function Navbar() {
   const dispatch = useDispatch();
-
   const toast = useToast();
   const router = useRouter();
-
   const {
     data: { img, username },
     token,
@@ -115,13 +113,18 @@ function Navbar() {
                   <PopoverBody>
                     {token ? (
                       <VStack>
-                        <Link href={"/userProfile"}>
-                          <Button variant={"none"} bg={"#166FE6"}>
-                            Profile
-                          </Button>
-                        </Link>
+                        <Button
+                          _hover={{ bg: "blue.300" }}
+                          w={"100%"}
+                          variant={"none"}
+                          bg={"#166FE6"}
+                        >
+                          <Link href={"/userProfile"}>Profile</Link>
+                        </Button>
 
                         <Button
+                          _hover={{ bg: "blue.300" }}
+                          w={"100%"}
                           onClick={handleLogout}
                           variant={"none"}
                           bg={"#166FE6"}
@@ -132,10 +135,22 @@ function Navbar() {
                     ) : (
                       <VStack>
                         <Link href={"/signin"}>
-                          <Button variant={"none"}>Log in</Button>
+                          <Button
+                            _hover={{ bg: "blue.300" }}
+                            w={"100%"}
+                            variant={"none"}
+                          >
+                            Log in
+                          </Button>
                         </Link>
                         <Link href={"/signup"}>
-                          <Button variant={"none"}>Create an Account</Button>
+                          <Button
+                            _hover={{ bg: "blue.300" }}
+                            w={"100%"}
+                            variant={"none"}
+                          >
+                            Create an Account
+                          </Button>
                         </Link>
                       </VStack>
                     )}
@@ -212,7 +227,7 @@ function Navbar() {
               ) : (
                 <Flex align={"center"} direction={"column"}>
                   <Box w={"full"} mb={3}>
-                    <Link href={"/profile"}>
+                    <Link href={"/userProfile"}>
                       <Button
                         w={"full"}
                         size={"lg"}
