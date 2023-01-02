@@ -1,7 +1,7 @@
 import nc from "next-connect";
 import validate from "../../../config/Validate";
 import Connectdatabse from "../../../database/Connection";
-// const jwt = require("jsonwebtoken");
+
 import bycrypt from "bcrypt";
 import userModel from "../../../Models/UserModel";
 const app = nc();
@@ -18,7 +18,7 @@ app.post(async (req, res) => {
         .status(401)
         .send({ message: "User already exists please log in" });
     }
-    const salt = await bycrypt.genSalt(Number(10));
+    const salt = await bycrypt.genSalt(Number(process.env.SALT));
     const hashPassword = await bycrypt.hash(req.body.password, salt);
 
     await userModel.create({
@@ -33,4 +33,4 @@ app.post(async (req, res) => {
       .send({ message: "Internal server error please try again later" });
   }
 });
-export default app
+export default app;

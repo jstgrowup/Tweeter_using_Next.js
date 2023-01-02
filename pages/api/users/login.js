@@ -8,8 +8,9 @@ import userModel from "../../../Models/UserModel";
 import loginvalidate from "../../../config/Loginvalidate";
 const app = nc();
 Connectdatabse();
-app.post("/login", async (req, res) => {
+app.post(async (req, res) => {
   const { email, password } = req.body;
+
   try {
     const { error } = loginvalidate(req.body);
     if (error) {
@@ -35,7 +36,7 @@ app.post("/login", async (req, res) => {
       img: data.img,
     };
     const payload = { data: updated };
-    const accessToken = jwt.sign(payload, process.env.ACCESS_TOKEN_KEY, {
+    const accessToken = jwt.sign(payload, process.env.JWT_KEY, {
       expiresIn: "30d",
     });
 
@@ -44,6 +45,7 @@ app.post("/login", async (req, res) => {
       message: "Log in successfull",
     });
   } catch (error) {
+ 
     res.status(500).send({ message: "Internal server error" });
   }
 });

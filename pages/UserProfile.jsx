@@ -27,17 +27,22 @@ import axios from "axios";
 import { BiDislike, BiLike } from "react-icons/bi";
 
 import { getTheUser, logoutUser } from "../store/UserRedux/UserActions";
-import DeleteButton from "../Components/DeleteButton";
-import { Logoutfunction } from "../utils/Logout";
+
 import { useRouter } from "next/router";
+import DeleteButton from "../Components/DeleteButton";
 const getData = async (token) => {
   try {
-    const res = await axios.post("http://localhost:8080/posts/getUsersPosts", {
-      token: token,
-    });
+    const res = await axios.post(
+      "http://localhost:3000/api/posts/getUsersPosts",
+      {
+        token: token,
+      }
+    );
     const { data } = res;
+
     return data;
   } catch (error) {
+    console.log("error:", error);
     return error.message;
   }
 };
@@ -71,7 +76,7 @@ function UserProfile() {
     }
 
     try {
-      await axios.patch(`http://localhost:8080/user/updateUser/${id}`, {
+      await axios.patch(`http://localhost:3000/api/user/updateUser/${id}`, {
         fullname: fullname,
         email: email,
         password: password,
@@ -103,7 +108,7 @@ function UserProfile() {
   }, [bool]);
   const handlePostsDelete = async (id) => {
     try {
-      await axios.post(`http://localhost:8080/posts/delete`, {
+      await axios.post(`http://localhost:3000/api/posts/delete`, {
         id: id,
       });
       toast({
@@ -127,7 +132,7 @@ function UserProfile() {
   };
   const handleDelete = async (id) => {
     try {
-      await axios.post("http://localhost:8080/user/delete", { id: id });
+      await axios.post("http://localhost:3000/api/user/delete", { id: id });
       toast({
         title: "Deleted successfully",
         status: "success",
@@ -158,7 +163,7 @@ function UserProfile() {
     });
   };
   return (
-    <>
+    <Box bg={useColorModeValue("#CCDEFF", "#171923")}>
       <Center>
         <Center w={["90%", "80%", "70%", "50%"]}>
           <Box
@@ -318,9 +323,6 @@ function UserProfile() {
           </Box>
         </Center>
       </Center>
-      <Center>
-        <Heading>Your Posts</Heading>
-      </Center>
       <Flex gap={"3"} align={"center"} direction={"column"}>
         {wholeData.length > 0 ? (
           wholeData.map((el) => {
@@ -378,7 +380,7 @@ function UserProfile() {
           <Image src="https://img.republicworld.com/republic-prod/stories/promolarge/xhdpi/1kutzil5lj0nvfsf_1596544016.jpeg" />
         )}
       </Flex>
-    </>
+    </Box>
   );
 }
 

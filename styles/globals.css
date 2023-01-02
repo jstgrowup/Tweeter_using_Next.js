@@ -4,6 +4,13 @@
   height: 30px;
   width: 30px;
 }
-.huru:hover{
+
+.huru:hover {
   cursor: pointer;
+}
+
+
+.huhu {
+  background-color: #CCDEFF;
+
 }

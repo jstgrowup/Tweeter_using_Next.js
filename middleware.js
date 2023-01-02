@@ -2,10 +2,11 @@ import { NextResponse } from "next/server";
 export default function middleware(req) {
   let verify = req.cookies.get("loggedin");
 
-  if (!verify) {
+  if (verify === undefined || !verify.value) {
     return NextResponse.redirect("http://localhost:3000/signin");
+  } else {
+    return NextResponse.next();
   }
-  return NextResponse.next();
 }
 export const config = {
   matcher: ["/"],

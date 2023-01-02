@@ -4,6 +4,7 @@ import {
   UserTokenSuccess,
 } from "./UserActionsTypes";
 import axios from "axios";
+import Cookies from "js-cookie";
 
 export const userLogin = (token) => async (dispatch) => {
   try {
@@ -22,7 +23,7 @@ export const getTheUser = (token) => async (dispatch) => {
       const res = await axios.post("http://localhost:8080/user/getuser", {
         token: token,
       });
-      
+
       const {
         data: { data },
       } = res;
@@ -38,6 +39,7 @@ export const getTheUser = (token) => async (dispatch) => {
   }
 };
 export const logoutUser = () => (dispatch) => {
+  Cookies.remove("loggedin");
   return dispatch({
     type: UserLogout,
     payload: null,

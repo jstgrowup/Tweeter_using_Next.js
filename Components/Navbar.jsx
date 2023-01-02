@@ -42,7 +42,7 @@ function Navbar() {
     token,
   } = useSelector((store) => store.user);
   const handleLogout = () => {
-    router.push("/");
+    router.push("/signin");
     dispatch(logoutUser());
 
     toast({

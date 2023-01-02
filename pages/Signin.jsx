@@ -12,12 +12,14 @@ import {
   useColorModeValue,
   useToast,
 } from "@chakra-ui/react";
+
 import { useDispatch } from "react-redux";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { userLogin } from "../store/UserRedux/UserActions";
 import axios from "axios";
 import Link from "next/link";
 import { useRouter } from "next/router";
+import Cookies from "js-cookie";
 function Signin() {
   const [show, setShow] = useState(false);
   const handleClick = () => setShow(!show);
@@ -73,13 +75,14 @@ function Signin() {
     try {
       setloading(true);
       const res = await axios.post(
-        "http://localhost:8080/user/login",
+        "http://localhost:3000/api/users/login",
         formData
       );
 
       const {
         data: { token, message },
       } = res;
+
       toast({
         title: message,
         status: "success",
@@ -94,7 +97,9 @@ function Signin() {
     } catch (e) {
       setloading(true);
       toast({
-        title: `${e.response.data.message}`,
+        // title: `${e.response.data.message}`,
+        title: "issues",
+
         status: "warning",
         duration: 3000,
         isClosable: true,
