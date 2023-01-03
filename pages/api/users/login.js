@@ -11,32 +11,34 @@ Connectdatabse();
 app.post(async (req, res) => {
   const { email, password } = req.body;
   try {
-    const { error } = loginvalidate(req.body);
-    if (error) {
-     
-      return res.status(401).send({ message: error.details[0].message });
-    }
+    // const { error } = loginvalidate(req.body);
+    // if (error) {
+
+    //   return res.status(401).send({ message: error.details[0].message });
+    // }
     const data = await userModel.findOne({
       email: email,
+      password: password,
     });
     if (!data) {
       return res.status(401).send({
         message: "User Does not exists please create an account",
       });
     }
-    const isVerified = await bycrypt.compare(password, data.password);
+    
+    // const isVerified = await bycrypt.compare(password, data.password);
 
-    if (!isVerified) {
-      return res.status(401).send({ message: "Invalid or Wrong Password" });
-    }
+    // if (!isVerified) {
+    //   return res.status(401).send({ message: "Invalid or Wrong Password" });
+    // }
     const updated = {
       _id: data._id,
       username: data.username,
       email: data.email,
       img: data.img,
     };
-    const payload = { data: updated };
-    const accessToken = jwt.sign(payload, process.env.JWT_KEY, {
+    // const payload = { data: updated };
+    const accessToken = jwt.sign(updated, process.env.JWT_KEY, {
       expiresIn: "30d",
     });
 
@@ -45,7 +47,6 @@ app.post(async (req, res) => {
       message: "Log in successfull",
     });
   } catch (error) {
- 
     res.status(500).send({ message: "Internal server error" });
   }
 });

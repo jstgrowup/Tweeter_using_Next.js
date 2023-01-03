@@ -20,19 +20,24 @@ export const userLogin = (token) => async (dispatch) => {
 export const getTheUser = (token) => async (dispatch) => {
   try {
     if (token) {
-      const res = await axios.post("http://localhost:8080/user/getuser", {
+      const res = await axios.post("http://localhost:3000/api/users/getuser", {
         token: token,
       });
 
       const {
         data: { data },
       } = res;
-
+      const maindata = {
+        _id: data._id,
+        username: data.username,
+        email: data.username,
+        img: data.img,
+      };
       dispatch({
         type: UserLoginsuccess,
-        payload: data,
+        payload: maindata,
       });
-      return data;
+      return maindata;
     }
   } catch (error) {
     console.log(error.message);

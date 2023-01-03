@@ -17,3 +17,4 @@ app.post(async (req, res) => {
     res.status(401).send(error.message);
   }
 });
+export default app

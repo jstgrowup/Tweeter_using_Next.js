@@ -12,7 +12,7 @@ import {
   useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
-// import "./Timeline.css";
+
 import React, { useEffect, useRef, useState } from "react";
 import {
   Modal,
@@ -30,8 +30,8 @@ import { BiDislike, BiLike } from "react-icons/bi";
 
 import DeleteButton from "../Components/DeleteButton";
 import { getTheUser } from "../store/UserRedux/UserActions";
-import { useRouter } from "next/router";
-const VITE_KEY = "HbK8mqA6OKEAQ0aIUVz2FEP3H985n1lM";
+
+
 const getData = async () => {
   try {
     const res = await axios.get("http://localhost:3000/api/posts");
@@ -47,7 +47,6 @@ export default function Home() {
   const { data, token } = useSelector((store) => store.user);
   const toast = useToast();
   const [searchdata, setdata] = useState([]);
-
   const dispatch = useDispatch();
   const [wholeData, setwholeData] = useState([]);
   const [bool, setbool] = useState(false);
@@ -58,7 +57,7 @@ export default function Home() {
     let huru = e.target.value;
     try {
       let res = await axios.get(
-        `https://api.giphy.com/v1/gifs/search?api_key=${VITE_KEY}&q=${huru}&limit=25&offset=0&rating=g&lang=en`
+        `https://api.giphy.com/v1/gifs/search?api_key=${process.env.VITE_KEY}&q=${huru}&limit=25&offset=0&rating=g&lang=en`
       );
       let {
         data: { data },

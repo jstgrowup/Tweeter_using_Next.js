@@ -45,6 +45,7 @@ const getData = async (token) => {
 };
 function UserProfile() {
   const { data, token } = useSelector((store) => store.user);
+   
   const [bool, setbool] = useState(false);
   const dispatch = useDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -52,8 +53,7 @@ function UserProfile() {
   const toast = useToast();
   const router = useRouter();
   const [formData, setformData] = useState({
-    fullname: "",
-    email: "",
+    username: "",
     password: "",
   });
   const handleChange = (e) => {
@@ -65,18 +65,19 @@ function UserProfile() {
     onOpen();
   };
   const postUser = async (id) => {
-    const { fullname, email, password } = formData;
-    if (!fullname || !email || !password) {
+ 
+    const { username, password } = formData;
+    if (!username || !password) {
       alert("please enter all the required fields");
     }
 
     try {
-      await axios.patch(`http://localhost:3000/api/users/${id}`, {
-        fullname: fullname,
-        email: email,
+      const res = await axios.patch(`http://localhost:3000/api/users/${id}`, {
+        username: username,
         password: password,
       });
 
+      console.log("res:", res);
       onClose();
       toast({
         title: "Updated successfully",
@@ -88,7 +89,7 @@ function UserProfile() {
     } catch (e) {
       onClose();
       toast({
-        title: "Something is wrong",
+        title: "Invalid password",
         status: "error",
         duration: 2000,
         isClosable: true,
@@ -250,31 +251,22 @@ function UserProfile() {
                   <ModalBody>
                     <Flex direction={"column"} align="start" p={"3"} gap={"3"}>
                       <Text fontSize={"sm"} align={"start"}>
-                        Full Name{" "}
+                        Username{" "}
                       </Text>
                       <Input
                         type={"text"}
-                        name={"fullname"}
+                        name={"username"}
                         onChange={handleChange}
-                        placeholder="Enter your full Name"
-                      ></Input>
+                        placeholder="Enter your new username"
+                      />
 
-                      <Text fontSize={"sm"} align={"start"}>
-                        EMAIL ID{" "}
-                      </Text>
-                      <Input
-                        type={"text"}
-                        name={"email"}
-                        onChange={handleChange}
-                        placeholder="Enter your Email Id"
-                      ></Input>
                       <Text fontSize={"sm"}>Password</Text>
                       <Input
                         type={"text"}
                         name={"password"}
                         onChange={handleChange}
                         placeholder="Enter Your Password"
-                      ></Input>
+                      />
 
                       <Button
                         onClick={() => handleSubmit(data._id)}

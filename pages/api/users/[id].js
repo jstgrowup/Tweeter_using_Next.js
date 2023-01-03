@@ -5,11 +5,12 @@ const app = nc();
 Connectdatabse();
 app.patch(async (req, res) => {
   const { id } = req.query;
-  const { fullname, email, password } = req.body;
+  console.log('id:', id)
+  const { username, password } = req.body;
   try {
     const data = await userModel.findByIdAndUpdate(
       { _id: id },
-      { $set: { fullname: fullname, email: email, password: password } }
+      { $set: { username: username, password: password } }
     );
 
     res.send(data);
@@ -17,3 +18,4 @@ app.patch(async (req, res) => {
     res.status(401).send(error.message);
   }
 });
+export default app;
