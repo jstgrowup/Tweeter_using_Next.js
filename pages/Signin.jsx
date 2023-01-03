@@ -48,8 +48,9 @@ function Signin() {
       duration: 2000,
     });
   };
-  const welcome = () => {
-    return toast({
+  
+  useEffect(() => {
+    toast({
       title: "Welcome! to tweeter",
       description: "If you already have an account please Login",
       position: "top-left",
@@ -58,9 +59,7 @@ function Signin() {
       isClosable: true,
       duration: 2000,
     });
-  };
-  useEffect(() => {
-    welcome();
+   
   }, []);
   const postUser = async () => {
     const { email, password } = formData;
@@ -109,7 +108,7 @@ function Signin() {
     postUser();
   };
   return (
-    <Box bg={useColorModeValue("#CCDEFF", "black")}>
+    <Box bg={useColorModeValue("#CCDEFF", "#171923")}>
       {" "}
       <Center p={"10"}>
         <Box

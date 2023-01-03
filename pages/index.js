@@ -1,4 +1,3 @@
-import Navbar from "../Components/Navbar";
 import {
   Avatar,
   Box,
@@ -12,8 +11,7 @@ import {
   useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
-
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Modal,
   ModalOverlay,
@@ -27,11 +25,8 @@ import axios from "axios";
 import { useDispatch, useSelector } from "react-redux";
 import { useToast } from "@chakra-ui/react";
 import { BiDislike, BiLike } from "react-icons/bi";
-
 import DeleteButton from "../Components/DeleteButton";
 import { getTheUser } from "../store/UserRedux/UserActions";
-
-
 const getData = async () => {
   try {
     const res = await axios.get("http://localhost:3000/api/posts");
@@ -52,12 +47,11 @@ export default function Home() {
   const [bool, setbool] = useState(false);
   const [text, settext] = useState("");
   const [url, seturl] = useState("");
-
   const handleChange = async (e) => {
     let huru = e.target.value;
     try {
       let res = await axios.get(
-        `https://api.giphy.com/v1/gifs/search?api_key=${process.env.VITE_KEY}&q=${huru}&limit=25&offset=0&rating=g&lang=en`
+        `https://api.giphy.com/v1/gifs/search?api_key=HbK8mqA6OKEAQ0aIUVz2FEP3H985n1lM&q=${huru}&limit=25&offset=0&rating=g&lang=en`
       );
       let {
         data: { data },
@@ -83,7 +77,6 @@ export default function Home() {
     getData()
       .then((main) => setwholeData(main))
       .catch((er) => console.log(er));
-    dispatch(getTheUser(token));
   }, [bool]);
   const handleSubmit = async () => {
     const respo = {

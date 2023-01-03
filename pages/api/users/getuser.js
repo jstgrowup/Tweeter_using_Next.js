@@ -6,15 +6,14 @@ import jwt from "jsonwebtoken";
 import userModel from "../../../Models/UserModel";
 app.post(async (req, res) => {
   const { token } = req.body;
+  
 
   try {
-    jwt.verify(token, process.env.JWT_KEY, (err, details) => {
+    jwt.verify(token, process.env.NEXT_PUBLIC_JWT_KEY, (err, details) => {
       if (err) {
         return res.status(401).send({ message: "Please Login again" });
       }
-
       const { _id } = details;
-
       userModel
         .findById(_id)
         .then((respo) =>

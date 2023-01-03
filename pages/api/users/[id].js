@@ -5,7 +5,7 @@ const app = nc();
 Connectdatabse();
 app.patch(async (req, res) => {
   const { id } = req.query;
-  console.log('id:', id)
+
   const { username, password } = req.body;
   try {
     const data = await userModel.findByIdAndUpdate(

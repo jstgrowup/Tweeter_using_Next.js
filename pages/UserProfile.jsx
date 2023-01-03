@@ -36,7 +36,7 @@ const getData = async (token) => {
       }
     );
     const { data } = res;
-
+    console.log('data:', data)
     return data;
   } catch (error) {
     console.log("error:", error);
@@ -45,7 +45,7 @@ const getData = async (token) => {
 };
 function UserProfile() {
   const { data, token } = useSelector((store) => store.user);
-   
+  console.log('data:', data)
   const [bool, setbool] = useState(false);
   const dispatch = useDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -65,7 +65,6 @@ function UserProfile() {
     onOpen();
   };
   const postUser = async (id) => {
- 
     const { username, password } = formData;
     if (!username || !password) {
       alert("please enter all the required fields");
@@ -77,7 +76,6 @@ function UserProfile() {
         password: password,
       });
 
-      console.log("res:", res);
       onClose();
       toast({
         title: "Updated successfully",
@@ -148,8 +146,8 @@ function UserProfile() {
     }
   };
   const handleLogout = () => {
-    router.push("/");
     dispatch(logoutUser());
+    router.push("/");
 
     toast({
       title: "Logout successfull",
@@ -338,7 +336,7 @@ function UserProfile() {
                       </Text>
                     </Flex>
                   </Flex>
-                  {el.userName === data.username && (
+                  {el.userId === data._id && (
                     <DeleteButton
                       handleDelete={handlePostsDelete}
                       _id={el._id}

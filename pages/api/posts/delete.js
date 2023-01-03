@@ -1,12 +1,9 @@
 import nc from "next-connect";
-
 import Connectdatabse from "../../../database/Connection";
 import PostModel from "../../../Models/PostsModel";
-
-
 const app = nc();
 Connectdatabse();
-app.post("/delete", async (req, res) => {
+app.post(async (req, res) => {
   const { id } = req.body;
   const data = await PostModel.findById(id);
   try {
@@ -20,3 +17,4 @@ app.post("/delete", async (req, res) => {
     res.status(404).send(error.message);
   }
 });
+export default app;

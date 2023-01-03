@@ -9,6 +9,7 @@ Connectdatabse();
 
 app.post(async (req, res) => {
   const { id } = req.body;
+ 
   try {
     await userModel.findByIdAndDelete({ _id: id });
 

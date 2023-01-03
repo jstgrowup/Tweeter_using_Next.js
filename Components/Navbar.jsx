@@ -60,7 +60,7 @@ function Navbar() {
         h={["80px", "80px", "100px", "100px"]}
         bg={useColorModeValue("#166FE6", "#166FE6")}
       >
-        <Flex height={"100%"} w={["17%", "15%", "13%", "7%", "5%"]}>
+        <Flex ml={"3"} height={"100%"} w={["17%", "15%", "13%", "7%", "5%"]}>
           <Image
             cursor={"pointer"}
             onClick={() => router.push("/")}
@@ -134,24 +134,20 @@ function Navbar() {
                       </VStack>
                     ) : (
                       <VStack>
-                        <Link href={"/signin"}>
-                          <Button
-                            _hover={{ bg: "blue.300" }}
-                            w={"100%"}
-                            variant={"none"}
-                          >
-                            Log in
-                          </Button>
-                        </Link>
-                        <Link href={"/signup"}>
-                          <Button
-                            _hover={{ bg: "blue.300" }}
-                            w={"100%"}
-                            variant={"none"}
-                          >
-                            Create an Account
-                          </Button>
-                        </Link>
+                        <Button
+                          _hover={{ bg: "blue.300" }}
+                          w={"100%"}
+                          variant={"none"}
+                        >
+                          <Link href={"/signin"}>Log in</Link>
+                        </Button>
+                        <Button
+                          _hover={{ bg: "blue.300" }}
+                          w={"100%"}
+                          variant={"none"}
+                        >
+                          <Link href={"/signup"}>Create an Account</Link>
+                        </Button>
                       </VStack>
                     )}
                   </PopoverBody>

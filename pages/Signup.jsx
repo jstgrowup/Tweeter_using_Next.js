@@ -78,7 +78,10 @@ function Signup() {
   };
 
   return (
-    <Center p={["3", "3", "6", "10"]} bg={useColorModeValue("#CCDEFF", "black")}>
+    <Center
+      p={["3", "3", "6", "10"]}
+      bg={useColorModeValue("#CCDEFF", "#171923")}
+    >
       <Box
         w={["400", "430px", "490px", "520px"]}
         bg={useColorModeValue("white", "white")}

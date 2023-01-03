@@ -16,16 +16,22 @@ app.post(async (req, res) => {
 
     //   return res.status(401).send({ message: error.details[0].message });
     // }
+    const emu = await userModel.findOne({ email: email });
+    if (!emu) {
+      return res.status(401).send({
+        message: "User Does not exists please create an account",
+      });
+    }
     const data = await userModel.findOne({
       email: email,
       password: password,
     });
     if (!data) {
       return res.status(401).send({
-        message: "User Does not exists please create an account",
+        message: "Wrong password",
       });
     }
-    
+
     // const isVerified = await bycrypt.compare(password, data.password);
 
     // if (!isVerified) {
@@ -38,7 +44,7 @@ app.post(async (req, res) => {
       img: data.img,
     };
     // const payload = { data: updated };
-    const accessToken = jwt.sign(updated, process.env.JWT_KEY, {
+    const accessToken = jwt.sign(updated, process.env.NEXT_PUBLIC_JWT_KEY, {
       expiresIn: "30d",
     });
 

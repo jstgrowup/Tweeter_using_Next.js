@@ -45,6 +45,7 @@ export const getTheUser = (token) => async (dispatch) => {
 };
 export const logoutUser = () => (dispatch) => {
   Cookies.remove("loggedin");
+  localStorage.removeItem("persist:root");
   return dispatch({
     type: UserLogout,
     payload: null,
