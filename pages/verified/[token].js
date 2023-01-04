@@ -11,7 +11,7 @@ import {
 import axios from "axios";
 
 import Router, { useRouter } from "next/router";
-import React, { useEffect, useState } from "react";
+import React, {  useState } from "react";
 
 function VerifyEmail() {
   const params = useRouter();
@@ -29,7 +29,7 @@ function VerifyEmail() {
     }
     try {
       const res = await axios.post(
-        "http://localhost:3000/api/token/change",
+        "/api/token/change",
         payload
       );
       if (res.status == 200) {

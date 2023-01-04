@@ -50,7 +50,7 @@ function Signup() {
     try {
       setloading(true);
       const res = await axios.post(
-        "http://localhost:3000/api/users/postUser",
+        "/api/users/postUser",
 
         formData
       );

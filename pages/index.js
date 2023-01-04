@@ -97,7 +97,7 @@ export default function Home() {
       return;
     }
     try {
-      await axios.post("http://localhost:3000/api/posts/createPost", respo);
+      await axios.post("/api/posts/createPost", respo);
       setbool(!bool);
       seturl(null);
       toast({
@@ -117,7 +117,7 @@ export default function Home() {
   };
   const handleDelete = async (id) => {
     try {
-      await axios.post(`http://localhost:3000/api/posts/delete`, {
+      await axios.post(`/api/posts/delete`, {
         id: id,
       });
       toast({
@@ -138,7 +138,7 @@ export default function Home() {
   };
   const handleLikesAndDislikes = async (id, type) => {
     try {
-      await axios.post("http://localhost:3000/api/posts/likesAndDislikes", {
+      await axios.post("/api/posts/likesAndDislikes", {
         id: id,
         type: type,
       });

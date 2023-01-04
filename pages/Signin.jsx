@@ -73,7 +73,7 @@ function Signin() {
     try {
       setloading(true);
       const res = await axios.post(
-        "http://localhost:3000/api/users/login",
+        "/api/users/login",
         formData
       );
       const {

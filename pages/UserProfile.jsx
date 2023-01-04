@@ -30,7 +30,7 @@ import DeleteButton from "../Components/DeleteButton";
 const getData = async (token) => {
   try {
     const res = await axios.post(
-      "http://localhost:3000/api/posts/getUsersPosts",
+      "/api/posts/getUsersPosts",
       {
         token: token,
       }
@@ -71,7 +71,7 @@ function UserProfile() {
     }
 
     try {
-      const res = await axios.patch(`http://localhost:3000/api/users/${id}`, {
+      const res = await axios.patch(`/api/users/${id}`, {
         username: username,
         password: password,
       });
@@ -104,7 +104,7 @@ function UserProfile() {
   }, [bool]);
   const handlePostsDelete = async (id) => {
     try {
-      await axios.post(`http://localhost:3000/api/posts/delete`, {
+      await axios.post(`/api/posts/delete`, {
         id: id,
       });
       toast({
@@ -128,7 +128,7 @@ function UserProfile() {
   };
   const handleDelete = async (id) => {
     try {
-      await axios.post("http://localhost:3000/api/users/delete", { id: id });
+      await axios.post("/api/users/delete", { id: id });
       toast({
         title: "Deleted successfully",
         status: "success",

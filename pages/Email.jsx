@@ -23,7 +23,7 @@ function Email() {
     try {
       setloading(true);
       const res = await axios.post(
-        `http://localhost:3000/api/token/find`,
+        `/api/token/find`,
         payload
       );
       if (res.status === 200) {
@@ -39,7 +39,7 @@ function Email() {
       }
       setloading(false);
     } catch (error) {
-      console.log("error:", error);
+
       setloading(true);
 
       toast({
