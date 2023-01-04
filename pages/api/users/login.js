@@ -23,11 +23,10 @@ app.post(async (req, res) => {
     }
     const data = await userModel.findOne({
       email: email,
-      password: password,
     });
     if (!data) {
       return res.status(401).send({
-        message: `Wrong Password`,
+        message: `User Doesnt exists`,
       });
     }
 

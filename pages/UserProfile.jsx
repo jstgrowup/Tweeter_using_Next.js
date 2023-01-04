@@ -36,7 +36,7 @@ const getData = async (token) => {
       }
     );
     const { data } = res;
-    console.log('data:', data)
+
     return data;
   } catch (error) {
     console.log("error:", error);
@@ -45,7 +45,7 @@ const getData = async (token) => {
 };
 function UserProfile() {
   const { data, token } = useSelector((store) => store.user);
-  console.log('data:', data)
+
   const [bool, setbool] = useState(false);
   const dispatch = useDispatch();
   const { isOpen, onOpen, onClose } = useDisclosure();
@@ -75,19 +75,21 @@ function UserProfile() {
         username: username,
         password: password,
       });
+      console.log('res:', res)
 
       onClose();
       toast({
-        title: "Updated successfully",
+        title: `${res.data.message}`,
         status: "success",
         duration: 2000,
         isClosable: true,
       });
       dispatch(getTheUser(token));
     } catch (e) {
+   
       onClose();
       toast({
-        title: "Invalid password",
+        title: `${e.response.data.message}`,
         status: "error",
         duration: 2000,
         isClosable: true,

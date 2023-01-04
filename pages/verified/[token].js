@@ -45,7 +45,13 @@ function VerifyEmail() {
         });
       }
     } catch (error) {
-      console.log("error:", error);
+      // console.log('error:', error)
+      toast({
+        title: `${error.response.data.message}`,
+        status: "success",
+        duration: 2000,
+        isClosable: true,
+      });
     }
   };
 
