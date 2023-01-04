@@ -13,7 +13,7 @@ import {
   useToast,
 } from "@chakra-ui/react";
 
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { userLogin } from "../store/UserRedux/UserActions";
 import axios from "axios";
@@ -48,7 +48,7 @@ function Signin() {
       duration: 2000,
     });
   };
-  
+
   useEffect(() => {
     toast({
       title: "Welcome! to tweeter",
@@ -59,7 +59,6 @@ function Signin() {
       isClosable: true,
       duration: 2000,
     });
-   
   }, []);
   const postUser = async () => {
     const { email, password } = formData;
@@ -154,6 +153,12 @@ function Signin() {
               <Text>
                 Dont Have an account?{" "}
                 <span style={{ color: "red" }}>Create an Account</span>{" "}
+              </Text>
+            </Link>
+            <Link href={"/email"}>
+              <Text>
+                Forgot your password?{" "}
+                <span style={{ color: "red" }}>Click here</span>{" "}
               </Text>
             </Link>
             <Button

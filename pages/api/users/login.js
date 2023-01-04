@@ -11,11 +11,10 @@ Connectdatabse();
 app.post(async (req, res) => {
   const { email, password } = req.body;
   try {
-    // const { error } = loginvalidate(req.body);
-    // if (error) {
-
-    //   return res.status(401).send({ message: error.details[0].message });
-    // }
+    const { error } = loginvalidate(req.body);
+    if (error) {
+      return res.status(401).send({ message: error.details[0].message });
+    }
     const emu = await userModel.findOne({ email: email });
     if (!emu) {
       return res.status(401).send({
@@ -28,22 +27,22 @@ app.post(async (req, res) => {
     });
     if (!data) {
       return res.status(401).send({
-        message: "Wrong password",
+        message: `Wrong Password`,
       });
     }
 
-    // const isVerified = await bycrypt.compare(password, data.password);
+    const isVerified = await bycrypt.compare(password, data.password);
 
-    // if (!isVerified) {
-    //   return res.status(401).send({ message: "Invalid or Wrong Password" });
-    // }
+    if (!isVerified) {
+      return res.status(401).send({ message: "Invalid or Wrong Password" });
+    }
     const updated = {
       _id: data._id,
       username: data.username,
       email: data.email,
       img: data.img,
     };
-    // const payload = { data: updated };
+
     const accessToken = jwt.sign(updated, process.env.NEXT_PUBLIC_JWT_KEY, {
       expiresIn: "30d",
     });

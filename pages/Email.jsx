@@ -1,48 +1,56 @@
 import {
   Box,
   Input,
-  InputGroup,
-  InputRightElement,
-  Text,
   useColorModeValue,
   useToast,
   Button,
   Center,
   Flex,
   Heading,
-  Image,
 } from "@chakra-ui/react";
 import axios from "axios";
-import React, { useEffect, useState } from "react";
-import { useSelector } from "react-redux";
+import React, { useState } from "react";
 
 function Email() {
-  const {
-    data: { email },
-    token,
-  } = useSelector((store) => store.user);
-
-  const [valid, setvalid] = useState(false);
+  const toast = useToast();
   const [uemail, setemail] = useState("");
-
+  const [loading, setloading] = useState(false);
   const verify = async () => {
     const payload = {
       email: uemail,
-      token: token,
     };
 
     try {
+      setloading(true);
       const res = await axios.post(
         `http://localhost:3000/api/token/find`,
         payload
       );
       if (res.status === 200) {
-        const realdat = await axios.get();
+        toast({
+          title: `${res.data.message}`,
+          description: "Please check your email",
+          position: "top-left",
+          status: "loading",
+          variant: "left-accent",
+          isClosable: true,
+          duration: 2000,
+        });
       }
-      console.log("res:", res);
-      setvalid(true);
+      setloading(false);
     } catch (error) {
-      setvalid(false);
+      console.log("error:", error);
+      setloading(true);
+
+      toast({
+        title: `${error.response.data.message}`,
+        position: "top-left",
+        status: "loading",
+        variant: "left-accent",
+        isClosable: true,
+        duration: 2000,
+      });
+      setloading(false);
     }
   };
 
@@ -75,7 +83,7 @@ function Email() {
             ></Input>
 
             <Button
-              // isLoading={loading}
+              isLoading={loading}
               loadingText={"Submitting"}
               onClick={handleSubmit}
               _hover={{ bg: "#24AEB1" }}

@@ -1,14 +1,15 @@
 import Joi from "joi";
 import nc from "next-connect";
-import verifyemail from "../../../config/sendemail";
+
 import Connectdatabse from "../../../database/Connection";
 import userModel from "../../../Models/UserModel";
-
+import passwordComplexity from "joi-password-complexity";
 const app = nc();
 Connectdatabse();
 const validate = (data) => {
   const schema = Joi.object({
     email: Joi.string().email().label("email"),
+    password: passwordComplexity().label("password"),
   });
   return schema.validate(data);
 };
@@ -24,9 +25,11 @@ app.post(async (req, res) => {
     if (!data) {
       return res.status(401).send({ message: "No email exists" });
     }
-    const url = `http://localhost:3000/verified/${data.email}`;
-    await verifyemail(data.email, "Tweeter-GIPHY.com", url);
-    res.status(200).send({ message: "Email Sent successfully" });
+    await userModel.findByIdAndUpdate(
+      { _id: data._id },
+      { $set: { password: req.body.password } }
+    );
+    res.status(200).send({ message: "Password Updated successfully" });
   } catch (error) {
     res
       .status(401)
