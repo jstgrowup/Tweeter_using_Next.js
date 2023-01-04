@@ -20,7 +20,7 @@ export const userLogin = (token) => async (dispatch) => {
 export const getTheUser = (token) => async (dispatch) => {
   try {
     if (token) {
-      const res = await axios.post("http://localhost:3000/api/users/getuser", {
+      const res = await axios.post("/api/users/getuser", {
         token: token,
       });
 
