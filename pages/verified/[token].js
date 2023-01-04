@@ -45,7 +45,7 @@ function VerifyEmail() {
         });
       }
     } catch (error) {
-      // console.log('error:', error)
+
       toast({
         title: `${error.response.data.message}`,
         status: "success",
